@@ -17,8 +17,13 @@ node{
     }
     
     stage('Push Docker Image'){
-        withCredentials([string(credentialsId: 'DOKCER_HUB_PASSWORD', variable: 'DOKCER_HUB_PASSWORD')]) {
-          sh "docker login -u acadalearning -p ${DOKCER_HUB_PASSWORD}"
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+   		 sh """
+        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+   		 """
+}
+
         }
         sh 'docker push acadalearning/spring-boot-mongo'
      }
